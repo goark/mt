@@ -1,5 +1,9 @@
 # [spiegel-im-spiegel/mt] -- [Mersenne Twister]; Pseudo Random Number Generator, Implemented by [Golang]
 
+[![Build Status](https://travis-ci.org/spiegel-im-spiegel/mt.svg?branch=master)](https://travis-ci.org/spiegel-im-spiegel/mt)
+[![GitHub license](http://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/mt/master/LICENSE)
+[![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/mt.svg)](https://github.com/spiegel-im-spiegel/mt/releases/latest)
+
 This package is "[Mersenne Twister]" algorithm, implemented by pure [Go].
 
 - Compatible with [math/rand] standard package.
