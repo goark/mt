@@ -1,15 +1,12 @@
 package mt19937
 
 import (
-	"math/rand"
+	"github.com/spiegel-im-spiegel/mt"
 )
 
 const (
-	nn        = 312
-	mm        = 156
-	matrixA   = 0xB5026F5AA96619E9
-	upperMask = 0xFFFFFFFF80000000 //Most significant 33 bits
-	lowerMask = 0x000000007FFFFFFF //Least significant 31 bits
+	nn = 312
+	mm = nn / 2
 )
 
 //Source is a source of random numbers.
@@ -33,11 +30,11 @@ func NewWithArray(seeds []uint64) *Source {
 }
 
 //NewSource returns a new pseudo-random source (compatible with rand.Source interface)
-func NewSource(seed int64) rand.Source {
+func NewSource(seed int64) mt.Source {
 	return New(seed)
 }
 
-//Seed initializes Source.mt with a seed
+//Seed initializes Source with a seed
 func (s *Source) Seed(seed int64) {
 	if s == nil {
 		return
@@ -48,7 +45,7 @@ func (s *Source) Seed(seed int64) {
 	}
 }
 
-//SeedArray initializes Source.mt with seeds array
+//SeedArray initializes Source with seeds array
 func (s *Source) SeedArray(seeds []uint64) {
 	if s == nil {
 		return
@@ -86,6 +83,15 @@ func (s *Source) SeedArray(seeds []uint64) {
 	s.mt[0] = 1 << 63 //MSB is 1; assuring non-zero initial array
 }
 
+const (
+	upperMask = 0xFFFFFFFF80000000 //Most significant 33 bits
+	lowerMask = 0x000000007FFFFFFF //Least significant 31 bits
+)
+
+var (
+	matrixA = [2]uint64{0, 0xB5026F5AA96619E9}
+)
+
 //Uint64 generates a random number on [0, 2^64-1]-interval
 func (s *Source) Uint64() uint64 {
 	if s == nil {
@@ -98,13 +104,13 @@ func (s *Source) Uint64() uint64 {
 		for i := 0; i < nn-1; i++ {
 			x := (s.mt[i] & upperMask) | (s.mt[i+1] & lowerMask)
 			if i < (nn - mm) {
-				s.mt[i] = s.mt[i+mm] ^ (x >> 1) ^ ((x & 0x01) * matrixA)
+				s.mt[i] = s.mt[i+mm] ^ (x >> 1) ^ matrixA[(int)(x&0x01)]
 			} else {
-				s.mt[i] = s.mt[i+(mm-nn)] ^ (x >> 1) ^ ((x & 0x01) * matrixA)
+				s.mt[i] = s.mt[i+(mm-nn)] ^ (x >> 1) ^ matrixA[(int)(x&0x01)]
 			}
 		}
 		x := (s.mt[nn-1] & upperMask) | (s.mt[0] & lowerMask)
-		s.mt[nn-1] = s.mt[mm-1] ^ (x >> 1) ^ ((x & 0x01) * matrixA)
+		s.mt[nn-1] = s.mt[mm-1] ^ (x >> 1) ^ matrixA[(int)(x&0x01)]
 		s.mti = 0
 	}
 
@@ -120,6 +126,24 @@ func (s *Source) Uint64() uint64 {
 //Int63 generates a random number on [0, 2^63-1]-interval
 func (s *Source) Int63() int64 {
 	return (int64)(s.Uint64() >> 1)
+}
+
+//Real generates a random number
+// on [0,1)-real-interval if mode==1,
+// on (0,1)-real-interval if mode==2,
+// on [0,1)-real-interval others
+func (s *Source) Real(mode int) float64 {
+	if s == nil {
+		return 0.0
+	}
+	switch mode {
+	case 1: //generates a random number on [0,1)-real-interval
+		return (float64)(s.Uint64()>>11) * (1.0 / 9007199254740991.0)
+	case 2: //generates a random number on (0,1)-real-interval
+		return (float64)(s.Uint64()>>11) * (1.0 / 9007199254740992.0)
+	default: //generates a random number on [0,1]-real-interval
+		return ((float64)(s.Uint64()>>12) + 0.5) * (1.0 / 4503599627370496.0)
+	}
 }
 
 /* MIT License
