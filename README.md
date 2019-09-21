@@ -15,15 +15,15 @@ This package is "[Mersenne Twister]" algorithm, implemented by pure [Go].
 ```go
 import (
     "fmt"
-	"math/rand"
+    "math/rand"
 
-	"github.com/spiegel-im-spiegel/mt/mt19937"
+    "github.com/spiegel-im-spiegel/mt/mt19937"
 )
 
 func ExampleMT19937() {
-	fmt.Println(rand.New(mt19937.NewSource(19650218)).Uint64())
-	//Output:
-	//13735441942630277712
+    fmt.Println(rand.New(mt19937.NewSource(19650218)).Uint64())
+    //Output:
+    //13735441942630277712
 }
 ```
 
@@ -31,26 +31,26 @@ func ExampleMT19937() {
 
 ```go
 import (
-	"encoding/binary"
-	"fmt"
+    "encoding/binary"
+    "fmt"
 
-	"github.com/spiegel-im-spiegel/mt"
+    "github.com/spiegel-im-spiegel/mt"
     "github.com/spiegel-im-spiegel/mt/mt19937"
 )
 
 func ExampleMT() {
-	prng := mt.New(mt19937.NewSource(19650218))
-	r := prng.Open()
-	defer r.Close()
+    prng := mt.New(mt19937.NewSource(19650218))
+    r := prng.Open()
+    defer r.Close()
 
-	buf := [8]byte{}
-	ct, err := r.Read(buf[:])
-	if err != nil {
-		return
-	}
-	fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
-	//Output:
-	//13735441942630277712
+    buf := [8]byte{}
+    ct, err := r.Read(buf[:])
+    if err != nil {
+        return
+    }
+    fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
+    //Output:
+    //13735441942630277712
 }
 ```
 
