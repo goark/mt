@@ -5,6 +5,7 @@ import (
 	"io"
 	"math/rand"
 	"sync"
+	"sync/atomic"
 )
 
 //Source represents a source of uniformly-distributed
@@ -14,21 +15,23 @@ type Source interface {
 	Real(int) float64
 }
 
-// PRNG is class of pseudo random number generator.
+//PRNG is class of pseudo random number generator.
 type PRNG struct {
 	source Source
 	mutexR *sync.Mutex
 	mutexW *sync.Mutex
+	opened int64
 	readCh <-chan byte
 	cancel context.CancelFunc
 }
 
+var _ rand.Source64 = (*PRNG)(nil) //PRNG is compatible with rand.Source and rand.Source64 interface
 var _ io.ReadCloser = (*PRNG)(nil) //PRNG is compatible with io.ReadCloser interface
 var _ io.ByteReader = (*PRNG)(nil) //PRNG is compatible with io.ByteReader interface
 
 //New returns new PRNG instance
 func New(s Source) *PRNG {
-	return &PRNG{source: s, mutexR: &sync.Mutex{}, mutexW: &sync.Mutex{}, readCh: nil, cancel: nil}
+	return &PRNG{source: s, mutexR: &sync.Mutex{}, mutexW: &sync.Mutex{}, opened: 0, readCh: nil, cancel: nil}
 }
 
 //Seed initializes Source.mt with a seed
@@ -94,37 +97,30 @@ func (prng *PRNG) Open() io.ReadCloser {
 	}
 	prng.mutexR.Lock()
 	defer prng.mutexR.Unlock()
+	atomic.AddInt64(&(prng.opened), 1)
 	if prng.cancel != nil {
 		return prng
 	}
-	const sz = 8
-	ch := make(chan byte, sz)
+	ch := make(chan byte, 8)
 	prng.readCh = ch
 	ctx, cancel := context.WithCancel(context.Background())
 	prng.cancel = cancel
 	go func() {
 		defer close(ch)
-		ct := sz
-		buf := [sz]byte{}
+		n := prng.Uint64()
+		pos := 0
 		for {
-			if ct >= sz {
-				n := prng.Uint64()
-				buf[0] = byte(n)
-				buf[1] = byte(n >> 8)
-				buf[2] = byte(n >> 16)
-				buf[3] = byte(n >> 24)
-				buf[4] = byte(n >> 32)
-				buf[5] = byte(n >> 40)
-				buf[6] = byte(n >> 48)
-				buf[7] = byte(n >> 56)
-				ct = 0
+			if pos > 7 {
+				n = prng.Uint64()
+				pos = 0
 			}
 			select {
 			case <-ctx.Done():
 				return
 			default:
-				ch <- buf[ct]
-				ct++
+				ch <- byte(n)
+				n >>= 8
+				pos++
 			}
 		}
 	}()
@@ -133,7 +129,10 @@ func (prng *PRNG) Open() io.ReadCloser {
 
 //ReadByte reads byte data from generator (compatible with io.ByteReader interface)
 func (prng *PRNG) ReadByte() (byte, error) {
-	if prng == nil || prng.readCh == nil {
+	if prng == nil {
+		return 0, io.ErrUnexpectedEOF
+	}
+	if prng.readCh == nil || prng.cancel == nil {
 		return 0, io.ErrUnexpectedEOF
 	}
 	b, ok := <-prng.readCh
@@ -145,6 +144,9 @@ func (prng *PRNG) ReadByte() (byte, error) {
 
 //Read reads bytes data from generator (compatible with io.ReadCloser interface)
 func (prng *PRNG) Read(buf []byte) (int, error) {
+	if prng == nil {
+		return 0, io.ErrUnexpectedEOF
+	}
 	l := len(buf)
 	if l == 0 {
 		return 0, nil
@@ -170,7 +172,12 @@ func (prng *PRNG) Close() error {
 	prng.mutexR.Lock()
 	defer prng.mutexR.Unlock()
 	if prng.cancel != nil {
+		atomic.AddInt64(&(prng.opened), -1)
+		if atomic.LoadInt64(&(prng.opened)) > 0 {
+			return nil
+		}
 		prng.cancel()
+		<-prng.readCh
 		prng.cancel = nil
 	}
 	return nil
