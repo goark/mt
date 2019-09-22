@@ -7,6 +7,7 @@
 This package is "[Mersenne Twister]" algorithm, implemented by pure [Go].
 
 - Compatible with [math/rand] standard package.
+- Goroutine-safe (if it uses [mt].PRNG type)
 
 ## Usage
 
@@ -27,11 +28,10 @@ func ExampleMT19937() {
 }
 ```
 
-### Usage with [mt].PRNG type (goroutine-safe version)
+### Usage of [mt].PRNG type (goroutine-safe version)
 
 ```go
 import (
-    "encoding/binary"
     "fmt"
 
     "github.com/spiegel-im-spiegel/mt"
@@ -39,18 +39,43 @@ import (
 )
 
 func ExampleMT() {
-    prng := mt.New(mt19937.NewSource(19650218))
-    r := prng.Open()
-    defer r.Close()
-
-    buf := [8]byte{}
-    ct, err := r.Read(buf[:])
-    if err != nil {
-        return
-    }
-    fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
+    fmt.Println(mt.New(mt19937.NewSource(19650218)).Uint64())
     //Output:
     //13735441942630277712
+}
+```
+
+#### Use [io].Reader interface
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+
+    "github.com/spiegel-im-spiegel/mt"
+    "github.com/spiegel-im-spiegel/mt/mt19937"
+)
+
+func main() {
+    prng := mt.New(mt19937.NewSource(19650218))
+    wg := sync.WaitGroup{}
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            r := prng.NewReader()
+            for i := 0; i < 10000; i++ {
+                buf := [8]byte{}
+                _, err := r.Read(buf[:])
+                if err != nil {
+                    return
+                }
+            }
+        }()
+    }
+    wg.Wait()
 }
 ```
 
@@ -66,4 +91,5 @@ This paclage is licensed under MIT license.
 [Go]: https://golang.org/ "The Go Programming Language"
 [Golang]: https://golang.org/ "The Go Programming Language"
 [math/rand]: https://golang.org/pkg/math/rand/ "rand - The Go Programming Language"
+[io]: https://golang.org/pkg/io/ "io - The Go Programming Language"
 [Mersenne Twister]: http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html "Mersenne Twister: A random number generator (since 1997/10)"

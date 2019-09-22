@@ -48,25 +48,29 @@ func TestPRNG(t *testing.T) {
 }
 
 func getBytes(prng *PRNG) (uint64, error) {
-	prng.Open()
-	defer prng.Close()
-
-	buf := [8]byte{}
-	ct, err := prng.Read(buf[:])
+	r := prng.NewReader()
+	buf := [9]byte{}
+	ct, err := r.Read(buf[:])
 	if err != nil {
 		return 0, err
 	}
+	//fmt.Println(buf[:ct])
+	_, err = r.ReadByte()
+	if err != nil {
+		return 0, err
+	}
+	ct, err = r.Read(buf[:])
+	if err != nil {
+		return 0, err
+	}
+	//fmt.Println(buf[:ct])
 	return binary.LittleEndian.Uint64(buf[:ct]), nil
 }
 
 func TestReader(t *testing.T) {
 	prng := New(&testSource{})
-	_, err := prng.ReadByte()
-	if !errors.Is(err, io.ErrUnexpectedEOF) {
-		t.Errorf("PRNG.Read() is \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-	}
-
 	wg := sync.WaitGroup{}
+	res := binary.LittleEndian.Uint64([]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0xe2, 0x01, 0x00})
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func(id int) {
@@ -74,33 +78,28 @@ func TestReader(t *testing.T) {
 			if err != nil {
 				t.Errorf("PRNG.Read() is %v, want nil.", err)
 			}
-			if n != 123456 {
-				t.Errorf("PRNG.Read() = %v, want %v.", prng.Uint64(), 123456)
+			if n != res {
+				t.Errorf("PRNG.Read() = %v, want %v.", n, res)
 			}
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+}
 
-	prng.Close() //no panic
-	_, err = prng.ReadByte()
+func TestReaderNil(t *testing.T) {
+	r := (*PRNG)(nil).NewReader()
+	buf := [8]byte{}
+	_, err := r.Read(buf[:])
 	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("PRNG.Read() is \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }
 
 func TestNilReader(t *testing.T) {
-	prng := (*PRNG)(nil)
-	_, err := prng.ReadByte()
-	if !errors.Is(err, io.ErrUnexpectedEOF) {
-		t.Errorf("PRNG.Read() is \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-	}
-
-	prng.Open()
-	defer prng.Close()
-
+	r := (*Reader)(nil)
 	buf := [8]byte{}
-	_, err = prng.Read(buf[:])
+	_, err := r.Read(buf[:])
 	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("PRNG.Read() is \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}

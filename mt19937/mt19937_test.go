@@ -2,12 +2,9 @@ package mt19937
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 	"math/rand"
 	"testing"
-
-	"github.com/spiegel-im-spiegel/mt"
 )
 
 var referenceTextInt = ` 7266447313870364031  4946485549665804864 16945909448695747420 16394063075524226720  4873882236456199058
@@ -466,21 +463,6 @@ func TestNil(t *testing.T) {
 	if r != 0 {
 		t.Errorf("<nil>.Int63() = \"%v\", want \"%v\".", r, 0)
 	}
-}
-
-func ExampleMT() {
-	prng := mt.New(NewSource(19650218))
-	r := prng.Open()
-	defer r.Close()
-
-	buf := [8]byte{}
-	ct, err := r.Read(buf[:])
-	if err != nil {
-		return
-	}
-	fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
-	//Output:
-	//13735441942630277712
 }
 
 func ExampleMT19937() {
