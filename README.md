@@ -81,7 +81,7 @@ func main() {
 
 ## License
 
-This paclage is licensed under MIT license.
+This package is licensed under MIT license.
 
 - [Commercial Use of Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/elicense.html)
 - [Mersenne Twisterの商業利用について](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/license.html)

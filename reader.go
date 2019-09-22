@@ -35,7 +35,7 @@ func (r *Reader) Read(buf []byte) (int, error) {
 			return ct, nil
 		}
 	}
-	rest8 := rest >> 3 //devision by 8
+	rest8 := rest >> 3 //division by 8
 	for rest8 > 0 {
 		rn := r.prng.source.Uint64()
 		buf[ct] = byte(rn)
