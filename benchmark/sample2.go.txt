@@ -11,23 +11,14 @@ import (
 
 func main() {
 	start := time.Now()
-	prng := mt.New(mt19937.NewSource(19650218))
 	wg := sync.WaitGroup{}
-	//r := prng.NewReader()
+	prng := mt.New(mt19937.NewSource(time.Now().UnixNano()))
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-
-			r := prng.NewReader()
 			for i := 0; i < 10000; i++ {
-				buf := [8]byte{}
-				//ct, err := r.Read(buf[:])
-				_, err := r.Read(buf[:])
-				if err != nil {
-					return
-				}
-				//fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
+				prng.Uint64()
 			}
 		}()
 	}

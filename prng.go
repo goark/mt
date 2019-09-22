@@ -46,36 +46,39 @@ func (prng *PRNG) SeedArray(seeds []uint64) {
 }
 
 //Uint64 generates a random number on [0, 2^64-1]-interval
-func (prng *PRNG) Uint64() uint64 {
+func (prng *PRNG) Uint64() (n uint64) {
 	if prng == nil {
 		return 0
 	}
 	prng.mutex.Lock()
-	defer prng.mutex.Unlock()
-	return prng.source.Uint64()
+	n = prng.source.Uint64()
+	prng.mutex.Unlock()
+	return
 }
 
 //Int63 generates a random number on [0, 2^63-1]-interval
-func (prng *PRNG) Int63() int64 {
+func (prng *PRNG) Int63() (n int64) {
 	if prng == nil {
 		return 0
 	}
 	prng.mutex.Lock()
-	defer prng.mutex.Unlock()
-	return prng.source.Int63()
+	n = prng.source.Int63()
+	prng.mutex.Unlock()
+	return
 }
 
 //Real generates a random number
 // on [0,1)-real-interval if mode==1,
 // on (0,1)-real-interval if mode==2,
-// on [0,1)-real-interval others
-func (prng *PRNG) Real(mode int) float64 {
+// on [0,1]-real-interval others
+func (prng *PRNG) Real(mode int) (f float64) {
 	if prng == nil {
 		return 0
 	}
 	prng.mutex.Lock()
-	defer prng.mutex.Unlock()
-	return prng.source.Real(mode)
+	f = prng.source.Real(mode)
+	prng.mutex.Unlock()
+	return
 }
 
 //NewReader returns new Reader instance.

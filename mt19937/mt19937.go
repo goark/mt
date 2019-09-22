@@ -131,7 +131,7 @@ func (s *Source) Int63() int64 {
 //Real generates a random number
 // on [0,1)-real-interval if mode==1,
 // on (0,1)-real-interval if mode==2,
-// on [0,1)-real-interval others
+// on [0,1]-real-interval others
 func (s *Source) Real(mode int) float64 {
 	if s == nil {
 		return 0.0
