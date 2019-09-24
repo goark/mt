@@ -15,6 +15,8 @@ type Source struct {
 	mti int        //mti==nn+1 means mt[nn] is not initialized
 }
 
+var _ mt.Source = (*Source)(nil) //Source is compatible with mt.Source interface
+
 //New returns a new pseudo-random source seeded with the given value.
 func New(seed int64) *Source {
 	rng := &Source{mt: [nn]uint64{}, mti: nn + 1}
@@ -27,11 +29,6 @@ func NewWithArray(seeds []uint64) *Source {
 	rng := &Source{mt: [nn]uint64{}, mti: nn + 1}
 	rng.SeedArray(seeds)
 	return rng
-}
-
-//NewSource returns a new pseudo-random source (compatible with rand.Source interface)
-func NewSource(seed int64) mt.Source {
-	return New(seed)
 }
 
 //Seed initializes Source with a seed

@@ -21,11 +21,9 @@ import (
     "github.com/spiegel-im-spiegel/mt/mt19937"
 )
 
-func ExampleMT19937() {
-    fmt.Println(rand.New(mt19937.NewSource(19650218)).Uint64())
-    //Output:
-    //13735441942630277712
-}
+fmt.Println(rand.New(mt19937.New(19650218)).Uint64())
+//Output:
+//13735441942630277712
 ```
 
 ### Usage of [mt].PRNG type (goroutine-safe version)
@@ -38,11 +36,9 @@ import (
     "github.com/spiegel-im-spiegel/mt/mt19937"
 )
 
-func ExampleMT() {
-    fmt.Println(mt.New(mt19937.NewSource(19650218)).Uint64())
-    //Output:
-    //13735441942630277712
-}
+fmt.Println(mt.New(mt19937.New(19650218)).Uint64())
+//Output:
+//13735441942630277712
 ```
 
 #### Use [io].Reader interface
@@ -59,7 +55,7 @@ import (
 )
 
 func main() {
-    prng := mt.New(mt19937.NewSource(19650218))
+    prng := mt.New(mt19937.New(19650218))
     wg := sync.WaitGroup{}
     for i := 0; i < 1000; i++ {
         wg.Add(1)
@@ -77,6 +73,23 @@ func main() {
     }
     wg.Wait()
 }
+```
+
+## Benchmark Test
+
+```
+$ go test -bench Random -benchmem ./benchmark
+goos: linux
+goarch: amd64
+pkg: github.com/spiegel-im-spiegel/mt/benchmark
+BenchmarkRandomALFG-4            	1000000000	         0.0466 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomMT19917-4         	1000000000	         0.0649 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomALFGRand-4        	1000000000	         0.0720 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomMT19917Rand-4     	1000000000	         0.0862 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomALFGLocked-4      	1000000000	         0.172 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomMT19917Locked-4   	1000000000	         0.192 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/spiegel-im-spiegel/mt/benchmark	6.895s
 ```
 
 ## License
