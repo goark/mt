@@ -20,7 +20,7 @@ func BenchmarkRandomALFG(b *testing.B) {
 }
 
 func BenchmarkRandomMT19917(b *testing.B) {
-	rnd := mt19937.NewSource(time.Now().UnixNano())
+	rnd := mt19937.New(time.Now().UnixNano())
 	b.ResetTimer()
 	for i := 0; i < count; i++ {
 		rnd.Uint64()
@@ -36,7 +36,7 @@ func BenchmarkRandomALFGRand(b *testing.B) {
 }
 
 func BenchmarkRandomMT19917Rand(b *testing.B) {
-	rnd := rand.New(mt19937.NewSource(time.Now().UnixNano()))
+	rnd := rand.New(mt19937.New(time.Now().UnixNano()))
 	b.ResetTimer()
 	for i := 0; i < count; i++ {
 		rnd.Uint64()
@@ -51,7 +51,7 @@ func BenchmarkRandomALFGLocked(b *testing.B) {
 }
 
 func BenchmarkRandomMT19917Locked(b *testing.B) {
-	rnd := mt.New(mt19937.NewSource(time.Now().UnixNano()))
+	rnd := mt.New(mt19937.New(time.Now().UnixNano()))
 	b.ResetTimer()
 	for i := 0; i < count; i++ {
 		rnd.Uint64()
