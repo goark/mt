@@ -3,7 +3,6 @@ package mt19937
 import (
 	"bytes"
 	"fmt"
-	"math/rand"
 	"testing"
 )
 
@@ -465,15 +464,9 @@ func TestNil(t *testing.T) {
 	}
 }
 
-func ExampleMT19937() {
-	fmt.Println(rand.New(New(19650218)).Uint64())
-	//Output:
-	//13735441942630277712
-}
-
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2019,2020 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -50,7 +50,7 @@ func TestPRNG(t *testing.T) {
 func getBytes(prng *PRNG) (uint64, error) {
 	r := prng.NewReader()
 	buf := [9]byte{}
-	ct, err := r.Read(buf[:])
+	_, err := r.Read(buf[:])
 	if err != nil {
 		return 0, err
 	}
@@ -59,7 +59,7 @@ func getBytes(prng *PRNG) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	ct, err = r.Read(buf[:])
+	ct, err := r.Read(buf[:])
 	if err != nil {
 		return 0, err
 	}
@@ -107,7 +107,7 @@ func TestNilReader(t *testing.T) {
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2019,2020 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
