@@ -145,7 +145,8 @@ func (s *Source) Real(mode int) float64 {
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2019 Spiegel, fork from 64bit Mersenne Twister code "mt19937-64.c".
+ * (http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/mt64.html)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

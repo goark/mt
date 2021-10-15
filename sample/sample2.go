@@ -1,61 +1,32 @@
-package benchmark
+//go:build run
+// +build run
+
+package main
 
 import (
-	"math/rand"
-	"testing"
+	"fmt"
+	"sync"
 	"time"
 
 	"github.com/spiegel-im-spiegel/mt"
 	"github.com/spiegel-im-spiegel/mt/mt19937"
 )
 
-const count = 10000000
-
-func BenchmarkRandomALFG(b *testing.B) {
-	rnd := rand.NewSource(time.Now().UnixNano()).(rand.Source64)
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+func main() {
+	start := time.Now()
+	wg := sync.WaitGroup{}
+	prng := mt.New(mt19937.New(time.Now().UnixNano()))
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 10000; i++ {
+				prng.Uint64()
+			}
+		}()
 	}
-}
-
-func BenchmarkRandomMT19917(b *testing.B) {
-	rnd := mt19937.New(time.Now().UnixNano())
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
-	}
-}
-
-func BenchmarkRandomALFGRand(b *testing.B) {
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
-	}
-}
-
-func BenchmarkRandomMT19917Rand(b *testing.B) {
-	rnd := rand.New(mt19937.New(time.Now().UnixNano()))
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
-	}
-}
-
-func BenchmarkRandomALFGLocked(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rand.Uint64()
-	}
-}
-
-func BenchmarkRandomMT19917Locked(b *testing.B) {
-	rnd := mt.New(mt19937.New(time.Now().UnixNano()))
-	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
-	}
+	wg.Wait()
+	fmt.Println("Time:", time.Now().Sub(start))
 }
 
 /* MIT License

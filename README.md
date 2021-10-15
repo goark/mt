@@ -8,11 +8,11 @@
 This package is "[Mersenne Twister]" algorithm, implemented by pure [Go].
 
 - Compatible with [math/rand] standard package.
-- Goroutine-safe (if it uses [mt].PRNG type)
+- Concurrency-safe (if it uses [mt].PRNG type)
 
 ## Usage
 
-### Usage with [math/rand] Standard Package (not goroutine-safe)
+### Usage with [math/rand] Standard Package (not concurrency-safe)
 
 ```go
 import (
@@ -27,7 +27,7 @@ fmt.Println(rand.New(mt19937.New(19650218)).Uint64())
 //13735441942630277712
 ```
 
-### Usage of [mt].PRNG type (goroutine-safe version)
+### Usage of [mt].PRNG type (concurrency-safe version)
 
 ```go
 import (

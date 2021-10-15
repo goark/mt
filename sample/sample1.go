@@ -1,6 +1,10 @@
+//go:build run
+// +build run
+
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
 	"sync"
 	"time"
@@ -10,20 +14,26 @@ import (
 )
 
 func main() {
-	start := time.Now()
+	//start := time.Now()
 	wg := sync.WaitGroup{}
 	prng := mt.New(mt19937.New(time.Now().UnixNano()))
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			r := prng.NewReader()
+			buf := [8]byte{}
 			for i := 0; i < 10000; i++ {
-				prng.Uint64()
+				ct, err := r.Read(buf[:])
+				if err != nil {
+					return
+				}
+				fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
 			}
 		}()
 	}
 	wg.Wait()
-	fmt.Println("Time:", time.Now().Sub(start))
+	//fmt.Println("Time:", time.Now().Sub(start))
 }
 
 /* MIT License

@@ -1,40 +1,24 @@
+//go:build run
+// +build run
+
 package main
 
 import (
-	"sync"
-	"time"
+	"fmt"
+	"math/rand"
 
 	"github.com/spiegel-im-spiegel/mt"
-	"github.com/spiegel-im-spiegel/mt/mt19937"
+	"github.com/spiegel-im-spiegel/mt/secure"
 )
 
 func main() {
-	//start := time.Now()
-	wg := sync.WaitGroup{}
-	prng := mt.New(mt19937.New(time.Now().UnixNano()))
-	for i := 0; i < 1000; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			r := prng.NewReader()
-			buf := [8]byte{}
-			for i := 0; i < 10000; i++ {
-				//ct, err := r.Read(buf[:])
-				_, err := r.Read(buf[:])
-				if err != nil {
-					return
-				}
-				//fmt.Println(binary.LittleEndian.Uint64(buf[:ct]))
-			}
-		}()
-	}
-	wg.Wait()
-	//fmt.Println("Time:", time.Now().Sub(start))
+	fmt.Println(rand.New(secure.Source{}).Uint64())
+	fmt.Println(mt.New(secure.Source{}).Uint64())
 }
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2021 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
