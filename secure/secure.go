@@ -7,6 +7,7 @@ import (
 	"github.com/spiegel-im-spiegel/mt"
 )
 
+// Source is random source for mt.Source interface.
 type Source struct{}
 
 var _ mt.Source = (*Source)(nil) //Source is compatible with mt.Source interface
@@ -17,18 +18,19 @@ func (s Source) Seed(seed int64) {}
 // SeedArray method is dummy function for mt.Source interface.
 func (s Source) SeedArray([]uint64) {}
 
-// Read method generates random bytes.
+// Read method generates random bytes, using crypto/rand.Read() function.
 func (s Source) Read(buf []byte) (int, error) {
 	return rand.Read(buf)
 }
 
-// Uint64 method generates a random number.
+// Uint64 method generates a random number in the range [0, 1<<64).
 func (s Source) Uint64() uint64 {
 	b := [8]byte{}
 	ct, _ := s.Read(b[:])
 	return binary.BigEndian.Uint64(b[:ct])
 }
 
+// Int63 method generates a random number in the range [0, 1<<63).
 func (s Source) Int63() int64 {
 	return (int64)(s.Uint64() >> 1)
 }
@@ -50,7 +52,7 @@ func (s Source) Real(mode int) float64 {
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2021 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
