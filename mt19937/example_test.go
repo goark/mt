@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/spiegel-im-spiegel/mt/mt19937"
+	"github.com/goark/mt/mt19937"
 )
 
 func ExampleNew() {

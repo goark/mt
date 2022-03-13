@@ -14,8 +14,8 @@ import (
     "fmt"
     "math/rand"
 
-    "github.com/spiegel-im-spiegel/mt"
-    "github.com/spiegel-im-spiegel/mt/secure"
+    "github.com/goark/mt"
+    "github.com/goark/mt/secure"
 )
 
 func main() {

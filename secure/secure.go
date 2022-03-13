@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 
-	"github.com/spiegel-im-spiegel/mt"
+	"github.com/goark/mt"
 )
 
 // Source is random source for mt.Source interface.
