@@ -1,7 +1,7 @@
 package mt19937
 
 import (
-	"github.com/spiegel-im-spiegel/mt"
+	"github.com/goark/mt"
 )
 
 const (
