@@ -6,17 +6,17 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"math/rand/v2"
 	"sync"
-	"time"
 
-	"github.com/goark/mt"
-	"github.com/goark/mt/mt19937"
+	"github.com/goark/mt/v2"
+	"github.com/goark/mt/v2/mt19937"
 )
 
 func main() {
 	//start := time.Now()
 	wg := sync.WaitGroup{}
-	prng := mt.New(mt19937.New(time.Now().UnixNano()))
+	prng := mt.New(mt19937.New(rand.Int64()))
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {
@@ -38,7 +38,7 @@ func main() {
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2019-2024 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

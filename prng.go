@@ -1,41 +1,31 @@
 package mt
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"sync"
 )
 
-//Source represents a source of uniformly-distributed
+// Source represents a source of uniformly-distributed
 type Source interface {
-	rand.Source64
+	rand.Source
 	SeedArray([]uint64)
 	Real(int) float64
 }
 
-//PRNG is class of pseudo random number generator.
+// PRNG is class of pseudo random number generator.
 type PRNG struct {
 	source Source
 	mutex  *sync.Mutex
 }
 
-var _ rand.Source64 = (*PRNG)(nil) //PRNG is compatible with rand.Source and rand.Source64 interface
+var _ rand.Source = (*PRNG)(nil) //PRNG is compatible with rand.Source and rand.Source64 interface
 
-//New returns new PRNG instance
+// New returns new PRNG instance
 func New(s Source) *PRNG {
 	return &PRNG{source: s, mutex: &sync.Mutex{}}
 }
 
-//Seed initializes Source.mt with a seed
-func (prng *PRNG) Seed(seed int64) {
-	if prng == nil {
-		return
-	}
-	prng.mutex.Lock()
-	prng.source.Seed(seed)
-	prng.mutex.Unlock()
-}
-
-//SeedArray initializes Source.mt with seeds array
+// SeedArray initializes Source.mt with seeds array
 func (prng *PRNG) SeedArray(seeds []uint64) {
 	if prng == nil {
 		return
@@ -45,7 +35,7 @@ func (prng *PRNG) SeedArray(seeds []uint64) {
 	prng.mutex.Unlock()
 }
 
-//Uint64 generates a random number on [0, 2^64-1]-interval
+// Uint64 generates a random number on [0, 2^64-1]-interval
 func (prng *PRNG) Uint64() (n uint64) {
 	if prng == nil {
 		return 0
@@ -56,18 +46,18 @@ func (prng *PRNG) Uint64() (n uint64) {
 	return
 }
 
-//Int63 generates a random number on [0, 2^63-1]-interval
-func (prng *PRNG) Int63() (n int64) {
-	if prng == nil {
-		return 0
-	}
-	prng.mutex.Lock()
-	n = prng.source.Int63()
-	prng.mutex.Unlock()
-	return
-}
+// // Int63 generates a random number on [0, 2^63-1]-interval
+// func (prng *PRNG) Int63() (n int64) {
+// 	if prng == nil {
+// 		return 0
+// 	}
+// 	prng.mutex.Lock()
+// 	n = int64(prng.source.Uint64() & rngMask)
+// 	prng.mutex.Unlock()
+// 	return
+// }
 
-//Real generates a random number
+// Real generates a random number
 // on [0,1)-real-interval if mode==1,
 // on (0,1)-real-interval if mode==2,
 // on [0,1]-real-interval others
@@ -81,7 +71,7 @@ func (prng *PRNG) Real(mode int) (f float64) {
 	return
 }
 
-//NewReader returns new Reader instance.
+// NewReader returns new Reader instance.
 func (prng *PRNG) NewReader() *Reader {
 	return &Reader{prng: prng}
 }

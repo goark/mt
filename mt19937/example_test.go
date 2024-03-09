@@ -2,9 +2,9 @@ package mt19937_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
-	"github.com/goark/mt/mt19937"
+	"github.com/goark/mt/v2/mt19937"
 )
 
 func ExampleNew() {
@@ -15,7 +15,7 @@ func ExampleNew() {
 
 /* MIT License
  *
- * Copyright 2019,2020 Spiegel
+ * Copyright 2019-2024 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -1,66 +1,65 @@
 package benchmark
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"testing"
-	"time"
 
-	"github.com/goark/mt"
-	"github.com/goark/mt/mt19937"
+	"github.com/goark/mt/v2"
+	"github.com/goark/mt/v2/mt19937"
 )
 
-const count = 10000000
+var seed1, seed2, seed3 = rand.Uint64(), rand.Uint64(), rand.Int64()
 
-func BenchmarkRandomALFG(b *testing.B) {
-	rnd := rand.NewSource(time.Now().UnixNano()).(rand.Source64)
+func BenchmarkRandomPCG(b *testing.B) {
+	rnd := rand.NewPCG(seed1, seed2)
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rnd.Uint64()
 	}
 }
 
 func BenchmarkRandomMT19917(b *testing.B) {
-	rnd := mt19937.New(time.Now().UnixNano())
+	rnd := mt19937.New(seed3)
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rnd.Uint64()
 	}
 }
 
-func BenchmarkRandomALFGRand(b *testing.B) {
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+func BenchmarkRandomPCGRand(b *testing.B) {
+	rnd := rand.New(rand.NewPCG(seed1, seed2))
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rnd.Uint64()
 	}
 }
 
 func BenchmarkRandomMT19917Rand(b *testing.B) {
-	rnd := rand.New(mt19937.New(time.Now().UnixNano()))
+	rnd := rand.New(mt19937.New(seed3))
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rnd.Uint64()
 	}
 }
 
-func BenchmarkRandomALFGLocked(b *testing.B) {
+func BenchmarkRandomChaCha8Locked(b *testing.B) {
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rand.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rand.Uint64()
 	}
 }
 
 func BenchmarkRandomMT19917Locked(b *testing.B) {
-	rnd := mt.New(mt19937.New(time.Now().UnixNano()))
+	rnd := mt.New(mt19937.New(seed3))
 	b.ResetTimer()
-	for i := 0; i < count; i++ {
-		rnd.Uint64()
+	for i := 0; i < b.N; i++ {
+		_ = rnd.Uint64()
 	}
 }
 
 /* MIT License
  *
- * Copyright 2019 Spiegel
+ * Copyright 2019-2024 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
