@@ -1,7 +1,7 @@
 package mt19937
 
 import (
-	"github.com/goark/mt"
+	"github.com/goark/mt/v2"
 )
 
 const (
@@ -9,7 +9,7 @@ const (
 	mm = nn / 2
 )
 
-//Source is a source of random numbers.
+// Source is a source of random numbers.
 type Source struct {
 	mt  [nn]uint64 //The array for the state vector
 	mti int        //mti==nn+1 means mt[nn] is not initialized
@@ -17,21 +17,21 @@ type Source struct {
 
 var _ mt.Source = (*Source)(nil) //Source is compatible with mt.Source interface
 
-//New returns a new pseudo-random source seeded with the given value.
+// New returns a new pseudo-random source seeded with the given value.
 func New(seed int64) *Source {
 	rng := &Source{mt: [nn]uint64{}, mti: nn + 1}
 	rng.Seed(seed)
 	return rng
 }
 
-//NewWithArray returns a new pseudo-random source seeded with the given values.
+// NewWithArray returns a new pseudo-random source seeded with the given values.
 func NewWithArray(seeds []uint64) *Source {
 	rng := &Source{mt: [nn]uint64{}, mti: nn + 1}
 	rng.SeedArray(seeds)
 	return rng
 }
 
-//Seed initializes Source with a seed
+// Seed initializes Source with a seed
 func (s *Source) Seed(seed int64) {
 	if s == nil {
 		return
@@ -42,7 +42,7 @@ func (s *Source) Seed(seed int64) {
 	}
 }
 
-//SeedArray initializes Source with seeds array
+// SeedArray initializes Source with seeds array
 func (s *Source) SeedArray(seeds []uint64) {
 	if s == nil {
 		return
@@ -89,7 +89,7 @@ var (
 	matrixA = [2]uint64{0, 0xB5026F5AA96619E9}
 )
 
-//Uint64 generates a random number on [0, 2^64-1]-interval
+// Uint64 generates a random number on [0, 2^64-1]-interval
 func (s *Source) Uint64() uint64 {
 	if s == nil {
 		return 0
@@ -120,12 +120,12 @@ func (s *Source) Uint64() uint64 {
 	return x
 }
 
-//Int63 generates a random number on [0, 2^63-1]-interval
-func (s *Source) Int63() int64 {
-	return (int64)(s.Uint64() >> 1)
-}
+// // Int63 generates a random number on [0, 2^63-1]-interval
+// func (s *Source) Int63() int64 {
+// 	return (int64)(s.Uint64() >> 1)
+// }
 
-//Real generates a random number
+// Real generates a random number
 // on [0,1)-real-interval if mode==1,
 // on (0,1)-real-interval if mode==2,
 // on [0,1]-real-interval others
@@ -145,7 +145,7 @@ func (s *Source) Real(mode int) float64 {
 
 /* MIT License
  *
- * Copyright 2019 Spiegel, fork from 64bit Mersenne Twister code "mt19937-64.c".
+ * Copyright 2019-2024 Spiegel, fork from 64bit Mersenne Twister code "mt19937-64.c".
  * (http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/mt64.html)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy

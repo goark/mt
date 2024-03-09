@@ -444,29 +444,29 @@ func TestMT(t *testing.T) {
 
 func TestEmpty(t *testing.T) {
 	rnd := &Source{mt: [nn]uint64{}, mti: nn + 1}
-	r := rnd.Int63()
-	res := New(5489).Int63()
+	r := rnd.Uint64()
+	res := New(5489).Uint64()
 	if r != res {
 		t.Errorf("<empty>.Int63() = \"%v\", want \"%v\".", r, res)
 	}
 	rnd.SeedArray(nil)
-	r2 := rnd.Int63()
-	res2 := New(19650218).Int63()
+	r2 := rnd.Uint64()
+	res2 := New(19650218).Uint64()
 	if r2 != res2 {
 		t.Errorf("<empty>.Int63() = \"%v\", want \"%v\".", r2, res2)
 	}
 }
 
 func TestNil(t *testing.T) {
-	r := (*Source)(nil).Int63()
+	r := (*Source)(nil).Uint64()
 	if r != 0 {
-		t.Errorf("<nil>.Int63() = \"%v\", want \"%v\".", r, 0)
+		t.Errorf("<nil>.Uint64() = \"%v\", want \"%v\".", r, 0)
 	}
 }
 
 /* MIT License
  *
- * Copyright 2019,2020 Spiegel
+ * Copyright 2019-2024 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
