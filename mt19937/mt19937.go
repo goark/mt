@@ -120,11 +120,6 @@ func (s *Source) Uint64() uint64 {
 	return x
 }
 
-// // Int63 generates a random number on [0, 2^63-1]-interval
-// func (s *Source) Int63() int64 {
-// 	return (int64)(s.Uint64() >> 1)
-// }
-
 // Real generates a random number
 // on [0,1)-real-interval if mode==1,
 // on (0,1)-real-interval if mode==2,
