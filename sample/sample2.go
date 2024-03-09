@@ -5,7 +5,7 @@ package main
 
 import (
 	"fmt"
-	stdrand "math/rand/v2"
+	"math/rand/v2"
 	"sync"
 	"time"
 
@@ -16,7 +16,7 @@ import (
 func main() {
 	start := time.Now()
 	wg := sync.WaitGroup{}
-	prng := mt.New(mt19937.New(stdrand.Int64()))
+	prng := mt.New(mt19937.New(rand.Int64()))
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {

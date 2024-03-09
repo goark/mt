@@ -43,6 +43,8 @@ func main() {
 ### Usage of [mt][github.com/goark/mt/v2].PRNG type (concurrency-safe version)
 
 ```go
+package main
+
 import (
     "fmt"
 
@@ -50,14 +52,18 @@ import (
     "github.com/goark/mt/v2/mt19937"
 )
 
-fmt.Println(mt.New(mt19937.New(19650218)).Uint64())
-//Output:
-//13735441942630277712
+func main() {
+    fmt.Println(mt.New(mt19937.New(19650218)).Uint64())
+    //Output:
+    //13735441942630277712
+}
 ```
 
 #### Use [io].Reader interface
 
 ```go
+package main
+
 import (
     "encoding/binary"
     "fmt"
